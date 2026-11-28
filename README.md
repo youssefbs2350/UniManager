@@ -81,7 +81,7 @@ Le projet utilise un backend **Spring Boot 3 (Java 17)** connecté à une base d
 
 ```bash
 # Se placer dans le répertoire du projet
-cd "C:\Users\youss\.gemini\antigravity\scratch\unimanager"
+cd unimanager
 
 # Lancer l'analyse du code
 flutter analyze

@@ -116,6 +116,8 @@ class StudentRepository extends ChangeNotifier {
     if (ApiConfig.useOnlineBackend) {
       try {
         created = await _api.createStudent(student);
+      } on ApiBusinessException {
+        rethrow;
       } catch (e) {
         debugPrint('Création locale (API indisponible) : $e');
       }
@@ -140,6 +142,8 @@ class StudentRepository extends ChangeNotifier {
     if (ApiConfig.useOnlineBackend) {
       try {
         updated = await _api.updateStudent(student);
+      } on ApiBusinessException {
+        rethrow;
       } catch (e) {
         debugPrint('Mise à jour locale (API indisponible) : $e');
       }
@@ -163,6 +167,8 @@ class StudentRepository extends ChangeNotifier {
     if (ApiConfig.useOnlineBackend) {
       try {
         await _api.updateStatus(id, newStatus);
+      } on ApiBusinessException {
+        rethrow;
       } catch (e) {
         debugPrint('Changement statut local (API indisponible) : $e');
       }
@@ -176,6 +182,8 @@ class StudentRepository extends ChangeNotifier {
     if (ApiConfig.useOnlineBackend) {
       try {
         await _api.deleteStudent(id);
+      } on ApiBusinessException {
+        rethrow;
       } catch (e) {
         debugPrint('Suppression locale (API indisponible) : $e');
       }

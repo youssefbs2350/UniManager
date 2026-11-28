@@ -3,6 +3,15 @@ import 'package:http/http.dart' as http;
 import '../models/student_model.dart';
 import 'api_config.dart';
 
+/// Exception métier renvoyée par le serveur Spring Boot (HTTP 4xx/5xx)
+class ApiBusinessException implements Exception {
+  final String message;
+  ApiBusinessException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 /// Client REST pour consommer le backend Spring Boot + MongoDB
 class StudentApiService {
   static final StudentApiService _instance = StudentApiService._internal();
@@ -38,7 +47,7 @@ class StudentApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return _fromSpringJson(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {
-      throw Exception(_extractError(response.body, response.statusCode));
+      throw ApiBusinessException(_extractError(response.body, response.statusCode));
     }
   }
 
@@ -56,7 +65,7 @@ class StudentApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return _fromSpringJson(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {
-      throw Exception(_extractError(response.body, response.statusCode));
+      throw ApiBusinessException(_extractError(response.body, response.statusCode));
     }
   }
 
@@ -74,7 +83,7 @@ class StudentApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return _fromSpringJson(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {
-      throw Exception(_extractError(response.body, response.statusCode));
+      throw ApiBusinessException(_extractError(response.body, response.statusCode));
     }
   }
 
@@ -86,7 +95,7 @@ class StudentApiService {
         .timeout(const Duration(seconds: 5));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(_extractError(response.body, response.statusCode));
+      throw ApiBusinessException(_extractError(response.body, response.statusCode));
     }
   }
 
