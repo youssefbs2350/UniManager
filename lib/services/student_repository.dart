@@ -1,33 +1,31 @@
 import 'package:flutter/foundation.dart';
 import '../models/student_model.dart';
-import 'supabase_api_service.dart';
-import 'supabase_config.dart';
+import 'api_config.dart';
+import 'student_api_service.dart';
 
 class StudentRepository extends ChangeNotifier {
   // Singleton pattern pour un accès centralisé
   static final StudentRepository _instance = StudentRepository._internal();
   factory StudentRepository() => _instance;
 
-  final SupabaseApiService _api = SupabaseApiService();
+  final StudentApiService _api = StudentApiService();
 
   StudentRepository._internal() {
     _initSeedData();
-    if (SupabaseConfig.useOnlineBackend) {
+    if (ApiConfig.useOnlineBackend) {
       syncWithBackend();
     }
   }
 
-  /// Synchronisation avec la base Supabase PostgreSQL distante
+  /// Synchronisation avec le backend Spring Boot + MongoDB local
   Future<void> syncWithBackend() async {
     try {
       final remoteStudents = await _api.fetchStudents();
-      if (remoteStudents.isNotEmpty) {
-        _students.clear();
-        _students.addAll(remoteStudents);
-        notifyListeners();
-      }
+      _students.clear();
+      _students.addAll(remoteStudents);
+      notifyListeners();
     } catch (e) {
-      debugPrint('Mode hors-ligne / Erreur Supabase : $e');
+      debugPrint('Mode hors-ligne / Erreur Spring Boot : $e');
     }
   }
 
@@ -114,11 +112,16 @@ class StudentRepository extends ChangeNotifier {
       throw Exception('Un étudiant doit obligatoirement être rattaché à une classe.');
     }
 
-    if (SupabaseConfig.useOnlineBackend) {
-      await _api.insertStudent(student);
+    var created = student;
+    if (ApiConfig.useOnlineBackend) {
+      try {
+        created = await _api.createStudent(student);
+      } catch (e) {
+        debugPrint('Création locale (API indisponible) : $e');
+      }
     }
 
-    _students.insert(0, student);
+    _students.insert(0, created);
     notifyListeners();
   }
 
@@ -133,11 +136,16 @@ class StudentRepository extends ChangeNotifier {
       throw Exception('Cette adresse email est déjà utilisée par un compte actif.');
     }
 
-    if (SupabaseConfig.useOnlineBackend) {
-      await _api.updateStudent(student);
+    var updated = student;
+    if (ApiConfig.useOnlineBackend) {
+      try {
+        updated = await _api.updateStudent(student);
+      } catch (e) {
+        debugPrint('Mise à jour locale (API indisponible) : $e');
+      }
     }
 
-    _students[index] = student;
+    _students[index] = updated;
     notifyListeners();
   }
 
@@ -152,8 +160,12 @@ class StudentRepository extends ChangeNotifier {
       }
     }
 
-    if (SupabaseConfig.useOnlineBackend) {
-      await _api.updateStatus(id, newStatus);
+    if (ApiConfig.useOnlineBackend) {
+      try {
+        await _api.updateStatus(id, newStatus);
+      } catch (e) {
+        debugPrint('Changement statut local (API indisponible) : $e');
+      }
     }
 
     _students[index] = current.copyWith(statut: newStatus);
@@ -161,8 +173,12 @@ class StudentRepository extends ChangeNotifier {
   }
 
   Future<void> deleteStudent(String id) async {
-    if (SupabaseConfig.useOnlineBackend) {
-      await _api.deleteStudent(id);
+    if (ApiConfig.useOnlineBackend) {
+      try {
+        await _api.deleteStudent(id);
+      } catch (e) {
+        debugPrint('Suppression locale (API indisponible) : $e');
+      }
     }
 
     _students.removeWhere((s) => s.id == id);

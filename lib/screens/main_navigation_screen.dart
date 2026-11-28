@@ -242,7 +242,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              'Projet académique Flutter / Dart découpé en 5 modules intégrés avec backend Supabase & PostgreSQL.',
+              'Projet académique Flutter / Dart découpé en 5 modules intégrés avec backend Spring Boot & MongoDB local.',
               style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
             ),
             SizedBox(height: 12),

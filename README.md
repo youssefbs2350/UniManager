@@ -68,14 +68,12 @@ Toutes les interfaces requises par le cahier des charges ont été générées a
 
 ---
 
-## 🗄️ 4. Modèle de Données & Préparation Backend Supabase
+## 🗄️ 4. Backend Spring Boot & MongoDB Local
 
-Les entités ont été conçues dans `lib/models/student_model.dart` pour s'interfacer directement avec les tables PostgreSQL de Supabase :
-- `Student` : `id`, `matricule`, `nom`, `prenom`, `date_naissance`, `email`, `telephone`, `filiere`, `niveau`, `classe`, `statut`, `created_at`.
-- `StudentDocument` : `id`, `title`, `category`, `file_name`, `upload_date`, `is_verified`.
-- `AcademicYearRecord` : `academic_year`, `level`, `class_name`, `average`, `mention`, `decision`.
-
-Toutes les méthodes de sérialisation `toMap()` et `fromMap()` sont prêtes pour les requêtes Supabase.
+Le projet utilise un backend **Spring Boot 3 (Java 17)** connecté à une base de données **MongoDB locale** (`mongodb://localhost:27017/unimanager_db`) dans le dossier `backend/` :
+- `Student` (`@Document(collection = "students")`) : `id`, `matricule` (index unique), `nom`, `prenom`, `dateNaissance`, `email`, `telephone`, `filiere`, `niveau`, `classe`, `statut`, `documents`, `historique`, `dateCreation`.
+- API REST complète exposée sur `http://localhost:8081/api/students` (port 8081 pour éviter le conflit avec Oracle sur 8080).
+- Client Flutter dans `lib/services/student_api_service.dart` et `lib/services/api_config.dart`.
 
 ---
 
